@@ -9,16 +9,28 @@ export async function main(denops: Denops): Promise<void> {
     throw new Error("Please set g:autotracktoggl_api_token");
   }
 
+  let currentDirName = "";
+  let currentBranchName = "";
+
+  const startTracking = async (): Promise<void> => {
+    const dirName = await denops.eval('expand("<sfile>:p:h:t")');
+    const branchName = await denops.eval("FugitiveHead()");
+
+    if (!branchName) return;
+    if (currentDirName === dirName && currentBranchName === branchName) return;
+
+    await startTrack(dirName, branchName, pluginName, apiToken);
+
+    currentDirName = dirName;
+    currentBranchName = branchName;
+  };
+
   denops.dispatcher = {
-    async startTracking() {
-      const dirName = await denops.eval('expand("<sfile>:p:h:t")');
-      const branchName = await denops.eval("FugitiveHead()");
-
-      if (!branchName) return;
-
-      startTrack(dirName, branchName, pluginName, apiToken);
+    async syncTracking() {
+      await startTracking();
+      setInterval(startTracking, 3000);
     },
   };
 
-  await denops.cmd(`call denops#notify("${pluginName}", "startTracking", [])`);
+  await denops.cmd(`call denops#notify("${pluginName}", "syncTracking", [])`);
 }
