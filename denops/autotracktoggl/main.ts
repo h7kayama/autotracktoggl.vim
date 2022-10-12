@@ -13,6 +13,9 @@ export async function main(denops: Denops): Promise<void> {
     async startTracking() {
       const dirName = await denops.eval('expand("<sfile>:p:h:t")');
       const branchName = await denops.eval("FugitiveHead()");
+
+      if (!branchName) return;
+
       startTrack(dirName, branchName, pluginName, apiToken);
     },
   };
