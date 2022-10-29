@@ -26,11 +26,11 @@ export async function main(denops: Denops): Promise<void> {
   };
 
   denops.dispatcher = {
-    async syncTracking() {
+    async startTracking() {
       await startTracking();
       setInterval(startTracking, 3000);
     },
   };
 
-  await denops.cmd(`call denops#notify("${pluginName}", "syncTracking", [])`);
+  await denops.cmd("call autotracktoggl#start()");
 }
